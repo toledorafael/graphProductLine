@@ -24,10 +24,7 @@ bool kBFS;
 bool kDFS;
 bool kCycle;
 bool kConnectedComps;
-bool kStronglyConnectedComps;
 bool kPrim;
-bool kKruskal;
-bool kShortestPath;
 
 
 /**
@@ -68,32 +65,13 @@ void GraphApp::setupMenu() {
     if (kConnectedComps){
         activeCommands.push_back(CC);
     } 
-    
-    if (kStronglyConnectedComps){
-        activeCommands.push_back(SCC);
-    } 
-    
+        
     if (kPrim){
         activeCommands.push_back(PRIM);
     } 
     
-    if (kKruskal){
-        activeCommands.push_back(KRUSKAL);
-    } 
-    
-    if (kShortestPath){
-        activeCommands.push_back(SHORTESTPATH);
-    }
     activeCommands.push_back(HELP);
     activeCommands.push_back(EXIT);
-
-    #if DEBUG
-    cout << "Comands load from file:" <<endl;
-    for(string command : activeCommands) {
-        cout << command << endl;
-    }
-    #endif
-    // activeCommands.push_back(LOAD); TODO: Add load graph
 }
 
 /**
@@ -135,14 +113,8 @@ void GraphApp::loadConfig (string configFilename){
                 kCycle = toggleValue;
             } else if (feature == "kConnectedComps" ){
                 kConnectedComps = toggleValue;
-            } else if (feature == "kStronglyConnectedComps" ){
-                kStronglyConnectedComps = toggleValue;
             } else if (feature == "kPrim" ){
                 kPrim = toggleValue;
-            } else if (feature == "kKruskal" ){
-                kKruskal = toggleValue;
-            } else if (feature == "kShortestPath" ){
-                kShortestPath = toggleValue;
             }
 
         }
@@ -169,7 +141,6 @@ void GraphApp::loadGraph (string graphFilename) {
 
         while ( line.size() != 0 )
         {
-            // addNode(line);
             Node* node = new Node(line);
             nodes.push_back(node);
 
@@ -189,7 +160,9 @@ void GraphApp::loadGraph (string graphFilename) {
             string startNode = vect[0];
             string endNode = vect[1];
             int weight;
-            if (kWeighted) weight = stoi(vect[2]);
+            if (kWeighted) {
+                weight = stoi(vect[2]);
+            }
 
             for (Node * n1 : nodes){
                 for (Node * n2: nodes){
@@ -218,13 +191,6 @@ void GraphApp::loadGraph (string graphFilename) {
 
             }          
         }
-
-        #if(DEBUG)
-            cout << "Loading graph...";
-            if(!kWeighted) printNeighbors();
-            else printEdges();
-            cout << endl;
-        #endif
         
         graphFile.close();
 
@@ -262,51 +228,47 @@ void GraphApp::printEdges() {
     }
 }
 
-/**
- * @brief Traverses the graph in Depth-First search
- * 
- * @param nodeID: starting node for the traversal
- * @param command: operation performed at each traversed node
- */
-void GraphApp::DFS(int nodeID, string command) {
-    visited[nodeID] = true;
+// /**
+//  * @brief Traverses the graph in Depth-First search
+//  * 
+//  * @param nodeID: starting node for the traversal
+//  * @param command: operation performed at each traversed node
+//  */
+// void GraphApp::DFS(int nodeID, string command) {
+//     visited[nodeID] = true;
 
-    // Check or execute action on current node
-    #if(DEBUG)
-    cout << nodeID << endl;
-    #endif
+//     if (kWeighted) {
+//         for (Edge* edge : edges[nodeID]) {
+//             int endNodeID = edge->getEndNodeID();
 
-    if (kWeighted) {
-        for (Edge* edge : edges[nodeID]) {
-            int endNodeID = edge->getEndNodeID();
-            if (kDirected) {
-                if (visited[endNodeID] == false) {
-                    DFS(endNodeID, command);
-                }
-            }
+//             if (kDirected) {
+//                 if (visited[endNodeID] == false) {
+//                     DFS(endNodeID, command);
+//                 }
+//             }
 
-            if (kUndirected) {
-                int startNodeID = edge->getStartNodeID();
-                if (startNodeID != nodeID && visited[startNodeID] == false) {
-                    DFS(startNodeID, command);
-                } else if (endNodeID != nodeID && visited[endNodeID] == false) {
-                    DFS(endNodeID, command);
-                }
-            }
+//             if (kUndirected) {
+//                 int startNodeID = edge->getStartNodeID();
+//                 if (startNodeID != nodeID && visited[startNodeID] == false) {
+//                     DFS(startNodeID, command);
+//                 } else if (endNodeID != nodeID && visited[endNodeID] == false) {
+//                     DFS(endNodeID, command);
+//                 }
+//             }
 
-        }
+//         }
         
-    }
+//     }
     
-    if (!kWeighted){
-        for (int neighborID : nodes[nodeID]->getNeighbors()) {
-            if (visited[neighborID] == false) {
-                DFS(neighborID, command);
-            }
-        }
-    }
+//     if (!kWeighted){
+//         for (int neighborID : nodes[nodeID]->getNeighbors()) {
+//             if (visited[neighborID] == false) {
+//                 DFS(neighborID, command);
+//             }
+//         }
+//     }
     
-}
+// }
 
 /**
  * @brief Traverses the graph in Depth-First search while executing the command
@@ -317,16 +279,18 @@ void GraphApp::DFS(int nodeID, string command) {
  */
 bool GraphApp::DFS(int nodeID, int parent, string command) {
     visited[nodeID] = true;
-    if (command == CYCLE && kDirected) {
-        recurStack[nodeID] = true;
+
+    if (kDirected) {
+        if (command == CYCLE) {
+            recurStack[nodeID] = true;
+        }
     }
 
-    if (command == CC && kUndirected) {
-        cout << nodeID << " ";
+    if (kUndirected) {
+        if (command == CC) {
+            cout << nodeID << " ";
+        }
     }
-    #if(DEBUG)
-    cout << nodeID << endl;
-    #endif
 
     if (kWeighted) {
         for (Edge* edge : edges[nodeID]) {
@@ -400,8 +364,10 @@ bool GraphApp::DFS(int nodeID, int parent, string command) {
         }
     }
 
-    if(command == CYCLE && kDirected){
-        recurStack[nodeID] = false;
+    if(kDirected) {
+        if(command == CYCLE){
+            recurStack[nodeID] = false;
+        }
     }
     return false;
 
@@ -424,13 +390,10 @@ void GraphApp::BFS(int nodeID, string command) {
     while(!queue.empty()) {
         currentNodeID = queue.front();
             
-        // Check or execute action on starting node node
-        #if(DEBUG)
-            cout << currentNodeID << endl;
-        #endif
-
-        if (command == CC && kUndirected) {
-            cout << currentNodeID << " ";
+        if (kUndirected) {
+            if (command == CC) {
+                cout << currentNodeID << " ";
+            }
         }
 
         queue.pop_front();
@@ -472,28 +435,28 @@ void GraphApp::BFS(int nodeID, string command) {
 
 }
 
-/**
- * @brief Traverses the all the nodes in the graph performing a command(DFS or BFS)
- * 
- * @param command: operation that is supposed to perform during traversal
- */
-void GraphApp::traverse(string command) {
-    //reset visited map
-    clearVisited();
+// /**
+//  * @brief Traverses the all the nodes in the graph performing a command(DFS or BFS)
+//  * 
+//  * @param command: operation that is supposed to perform during traversal
+//  */
+// void GraphApp::traverse(string command) {
+//     //reset visited map
+//     clearVisited();
     
-    for (Node * node : nodes) {
-        if (visited[node->getID()] == false) {
-            if (kDFS) {
-                DFS(node->getID(), command);
-            }
-            if (kBFS) {
-                BFS(node->getID(), command);
-            }
-        }
-    }
+//     for (Node * node : nodes) {
+//         if (visited[node->getID()] == false) {
+//             if (kDFS) {
+//                 DFS(node->getID(), command);
+//             }
+//             if (kBFS) {
+//                 BFS(node->getID(), command);
+//             }
+//         }
+//     }
 
-    clearVisited();
-}
+//     clearVisited();
+// }
 
 /**
  * @brief Clears the visited map by assigning false to all position
@@ -530,47 +493,51 @@ int GraphApp::printHeader(){
     for (string command : activeCommands) {
         if (command != HELP) {
             cout << "- " << command;
-            if (command == CYCLE && kCycle) {
+            if (command == CYCLE) {
                 cout << ": Checks whether the graph include cycles." << endl;
-            } else if (command == CC && kConnectedComps) {
+            } else if (command == CC) {
                 cout << ": Computes the connected components" << 
                 endl << "of an undirected graph, which are equivalence classes under" << 
                 endl <<"the reachable-from relation." <<
                 endl;  
-            } else if (command == SCC && kStronglyConnectedComps) {
+            } else if (command == SCC) {
                 cout << ": Computes the strongly connected " << 
                 endl <<"components of a directed graph, which are equivalence" << 
                 endl <<"classes under the reachable-from relation." << endl;
-            } else if (command == PRIM && kPrim) {
+            } else if (command == PRIM) {
                 cout << ": Computes a Minimum Spanning Tree (MST) using Prim's Algorithm." << endl;
             } else if (command == EXIT) {
                 cout << ": Exits the program." << endl;
             }
         }
     }
-    
-
-    
+  
     return 1;
 }
 
 /**
- * @brief Traverses the graph looking for cycles
+ * @brief Traverses the graph looking for cycles. It requires kDFS
  * 
  * @return true if the graph has cycles
  * @return false if the graph doesn't have cycles
  */
 bool GraphApp::isCyclic() {
     //reset visited map
-    clearVisited();
-    for (Node * node : nodes) {
-        if(visited[node->getID()] == false && kDFS){
-            if (DFS(node->getID(), -1, CYCLE)) {
-                return true;
+    if (kDFS) {
+        clearVisited();
+        for (Node * node : nodes) {
+            if(visited[node->getID()] == false){
+                if (DFS(node->getID(), -1, CYCLE)) {
+                    return true;
+                }
             }
         }
+        return false;
+    } else {
+        cout << "DFS not enabled!" << endl;
+        return false;
     }
-    return false;
+    
 }
 
 /**
@@ -578,22 +545,25 @@ bool GraphApp::isCyclic() {
  * 
  */
 void GraphApp::connectedComponents() {
-    //reset visited map
-    clearVisited();
-    int compNum = 0;
-    for (Node * node : nodes) {
-        if(visited[node->getID()] == false){
-            cout << "Component " << compNum+1 << ": ";
-            if (kDFS) {
-                DFS(node->getID(), 0, CC);;
-            }
+    if (kSearch && kUndirected) {
+        clearVisited();
+        int compNum = 0;
+        for (Node * node : nodes) {
+            if(visited[node->getID()] == false){
+                cout << "Component " << compNum+1 << ": ";
+                if (kDFS) {
+                    DFS(node->getID(), 0, CC);;
+                }
 
-            if (kBFS) {
-                BFS(node->getID(), CC);
+                if (kBFS) {
+                    BFS(node->getID(), CC);
+                }
+                cout << endl;
+                compNum++;
             }
-            cout << endl;
-            compNum++;
         }
+    } else {
+        cout << "Feature not enabled!" << endl;
     }
 }
 
@@ -602,67 +572,71 @@ void GraphApp::connectedComponents() {
  * 
  */
 void GraphApp::MSTPrim() {
-    vector<Edge*> MST;
-    
-    clearVisited();
-    
-    // Initialize node values
-    for (int i=0; i < nodes.size(); i++){
-        if (i == 0){
-            nodes[i]->setValue(0);
-        } else {
-            nodes[i]->setValue(INT_MAX);
+    if (kWeighted && kUndirected) {
+        vector<Edge*> MST;
+        
+        clearVisited();
+        
+        // Initialize node values
+        for (int i=0; i < nodes.size(); i++){
+            if (i == 0){
+                nodes[i]->setValue(0);
+            } else {
+                nodes[i]->setValue(INT_MAX);
+            }
         }
-    }
 
-    int currentNodeID = 0;
-    visited[currentNodeID] = true;
-    int count = 1;
-    int next;
-    int total = 0;
+        int currentNodeID = 0;
+        visited[currentNodeID] = true;
+        int count = 1;
+        int next;
+        int total = 0;
 
-    while (count < nodes.size()) {
-        int min = INT_MAX;
-        int minIndex;
-        Edge * minEdge;
-        for (Node * node : nodes) {
-            currentNodeID = node->getID();
-            if (visited[currentNodeID]) {
-                for (Edge * edge : edges[currentNodeID]) {
-                    
-                    next = edge->getNext(currentNodeID);
+        while (count < nodes.size()) {
+            int min = INT_MAX;
+            int minIndex;
+            Edge * minEdge;
+            for (Node * node : nodes) {
+                currentNodeID = node->getID();
+                if (visited[currentNodeID]) {
+                    for (Edge * edge : edges[currentNodeID]) {
+                        
+                        next = edge->getNext(currentNodeID);
 
-                    if(visited[next] == false && edge->getWeight() < nodes[next]->getValue()) {
-                        nodes[next]->setValue(edge->getWeight());
-                    }
+                        if(visited[next] == false && edge->getWeight() < nodes[next]->getValue()) {
+                            nodes[next]->setValue(edge->getWeight());
+                        }
 
-                    if(visited[next] == false && nodes[next]->getValue() < min) {
-                        min = nodes[next]->getValue();
-                        minIndex = next;
-                        minEdge = edge;
+                        if(visited[next] == false && nodes[next]->getValue() < min) {
+                            min = nodes[next]->getValue();
+                            minIndex = next;
+                            minEdge = edge;
+                        }
                     }
                 }
             }
+            
+
+            visited[minIndex] = true;
+            total += min;
+
+            MST.push_back(minEdge);
+
+            count++;
         }
-        
 
-        visited[minIndex] = true;
-        total += min;
+        cout << "MST edges:" << endl;
+        for (Edge * edge : MST){
+            cout << edge->getStartNodeID() << "-";
+            cout << edge->getWeight() << "-";
+            cout << edge->getEndNodeID();
+            cout << endl;
+        }
 
-        MST.push_back(minEdge);
-
-        count++;
+        cout << "Total MST weight: " << total << endl;
+    } else {
+        cout << "Feature not enabled!" << endl;
     }
-
-    cout << "MST edges:" << endl;
-    for (Edge * edge : MST){
-        cout << edge->getStartNodeID() << "-";
-        cout << edge->getWeight() << "-";
-        cout << edge->getEndNodeID();
-        cout << endl;
-    }
-
-    cout << "Total MST weight: " << total << endl;
 }
 
 /**
@@ -689,16 +663,28 @@ void GraphApp::handleCommands() {
         //Check commands
         if (command == HELP){
             printHeader();
-        } else if (command == CYCLE && kCycle) {
-            if (isCyclic()) {
-                cout << "Graph contains cycle!" << endl;
+        } else if (command == CYCLE) {
+            if (kCycle) {
+                if (isCyclic()) {
+                    cout << "Graph contains cycle!" << endl;
+                } else {
+                    cout << "Graph doesn't contain cycle" << endl;
+                }
             } else {
-                cout << "Graph doesn't contain cycle" << endl;
+                cout << "Feature not enabled!" << endl;
             }
-        } else if (command == CC && kConnectedComps) {
-            connectedComponents();
+        } else if (command == CC) {
+            if (kConnectedComps) {
+                connectedComponents();
+            } else {
+                cout << "Feature not enabled!" << endl;
+            }
         } else if (command == PRIM && kPrim) {
-            MSTPrim();
+            if (kPrim) {
+                MSTPrim();
+            } else {
+                cout << "Feature not enabled!" << endl;
+            }
         } else if (command == LOAD) {
             //TODO: implement loading a graph from specified file
         } else if (command == EXIT) {

@@ -52,8 +52,8 @@ class GraphApp {
 
     // /** Private Graph Algorithms*/
 	// void graphAlgorithm(algorithmConfiguration, userDemand);
-    void traverse(std::string command);
-    void DFS(int nodeID, std::string command);
+    // void traverse(std::string command);
+    // void DFS(int nodeID, std::string command);
 	bool isCyclic();
 	bool DFS(int nodeID, int parent, std::string command);
     void BFS(int nodeID, std::string command);
