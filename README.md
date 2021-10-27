@@ -2,12 +2,32 @@
 
 *Based on specification defined in [1,2]*
 
-Feature Model (needs to include shortest path algorithm)
+## Feature model
 ![FeatureModel](featureModel.png)
 
-
+## Features
 - Base: read graph from a file
 - TestProg: creates the objects to represent the graph, and calls the algorithms of the family members of the graph
+- GraphType
+- Weighted
+- Search
+- Algorithms
+
+## Feature configurations
+Possible feature configurations:
+- kWeighted /\ kDirected /\ kDFS /\ kCycle
+- !kWeighted /\ kDirected /\ kDFS /\ kCycle
+- kWeighted /\ kUndirected /\ kDFS /\ kCycle
+- !kWeighted /\ kUndirected /\ kDFS /\ kCycle
+- kWeighted /\ kUndirected /\ kDFS /\ kConnectedComps
+- !kWeighted /\ kUndirected /\ kDFS /\ kConnectedComps
+- kWeighted /\ kUndirected /\ kBFS /\ kConnectedComps
+- !kWeighted /\ kUndirected /\ kBFS /\ kConnectedComps
+- kWeighted /\ kUndirected /\ kPrim
+- ...
+
+
+
 
 ## Graph Implementation
 There will have two possible implementation for the Graph, based on wheter or not the feature _Weighted_ is enabled:
