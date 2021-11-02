@@ -69,7 +69,10 @@ void GraphApp::setupMenu() {
     if (kPrim){
         activeCommands.push_back(PRIM);
     } 
-    
+    activeCommands.push_back(ADDEDGE);
+    activeCommands.push_back(ADDNODE);
+    activeCommands.push_back(UPDATEEDGE);
+    activeCommands.push_back(UPDATENODE);
     activeCommands.push_back(HELP);
     activeCommands.push_back(EXIT);
 }
@@ -228,6 +231,12 @@ void GraphApp::addEdge(std::string startNodeName, std::string endNodeName) {
     }
 }
 
+/**
+ * @brief Update name of a specific node
+ * 
+ * @param nodeName 
+ * @param newName 
+ */
 void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
     for (int i=0; i < nodes.size(); i++) {
         if (nodes[i]->getName() == nodeName) {
@@ -236,6 +245,13 @@ void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
     }
 }
 
+/**
+ * @brief Update weight value of a specific edge
+ * 
+ * @param startNodeName 
+ * @param endNodeName 
+ * @param newWeight 
+ */
 void GraphApp::updateEdgeWeight(std::string startNodeName, std::string endNodeName, int newWeight) {
     int startNodeID, endNodeID;
 
@@ -343,10 +359,10 @@ void GraphApp::loadGraph (string graphFilename) {
  */
 void GraphApp::printNeighbors() {
     for (Node * node : nodes){
-        cout << node->getID() << "-" << node->getName() << endl;
+        cout << nodes[node->getID()]->getName() << "-" << node->getName() << endl;
         cout << "Neighbors: ";
         for (int neighbor : node->getNeighbors()) {
-            cout << neighbor << ",";
+            cout << nodes[neighbor]->getName() << ",";
         }
         cout << endl;
     }
@@ -360,9 +376,9 @@ void GraphApp::printEdges() {
     for (size_t i = 0; i < nodes.size(); i++) {
         cout << "Edges from node: " << nodes[i]->getID() << endl; 
         for (Edge * edge : edges[i]){
-            cout << edge->getID() << ":" << edge->getStartNodeID() << "-";
+            cout << "Edge" << edge->getID() << ":" << nodes[edge->getStartNodeID()]->getName() << "-";
             cout << edge->getWeight() << "-";
-            cout << edge->getEndNodeID();
+            cout << nodes[edge->getEndNodeID()]->getName();
             cout << endl;
         }
     }
@@ -533,29 +549,6 @@ void GraphApp::BFS(int nodeID, string command) {
 
 }
 
-// /**
-//  * @brief Traverses the all the nodes in the graph performing a command(DFS or BFS)
-//  * 
-//  * @param command: operation that is supposed to perform during traversal
-//  */
-// void GraphApp::traverse(string command) {
-//     //reset visited map
-//     clearVisited();
-    
-//     for (Node * node : nodes) {
-//         if (visited[node->getID()] == false) {
-//             if (kDFS) {
-//                 DFS(node->getID(), command);
-//             }
-//             if (kBFS) {
-//                 BFS(node->getID(), command);
-//             }
-//         }
-//     }
-
-//     clearVisited();
-// }
-
 /**
  * @brief Clears the visited map by assigning false to all position
  * 
@@ -604,6 +597,14 @@ int GraphApp::printHeader(){
                 endl <<"classes under the reachable-from relation." << endl;
             } else if (command == PRIM) {
                 cout << ": Computes a Minimum Spanning Tree (MST) using Prim's Algorithm." << endl;
+            } else if (command == ADDNODE) {
+                cout << ": Adds a new node to the graph." << endl;
+            } else if (command == ADDEDGE) {
+                cout << ": Adds a new edge to the graph." << endl;
+            } else if (command == UPDATENODE) {
+                cout << ": Updates the name of a specific node." << endl;
+            } else if (command == UPDATEEDGE) {
+                cout << ": Updates the weight of a specific edge." << endl;
             } else if (command == EXIT) {
                 cout << ": Exits the program." << endl;
             }
@@ -725,9 +726,9 @@ void GraphApp::MSTPrim() {
 
         cout << "MST edges:" << endl;
         for (Edge * edge : MST){
-            cout << edge->getStartNodeID() << "-";
+            cout << nodes[edge->getStartNodeID()]->getName() << "-";
             cout << edge->getWeight() << "-";
-            cout << edge->getEndNodeID();
+            cout << nodes[edge->getEndNodeID()]->getName();
             cout << endl;
         }
 
