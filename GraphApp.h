@@ -88,13 +88,11 @@ class GraphApp {
     const std::string PRIM = "prim";
     const std::string KRUSKAL = "kruskal";
     const std::string SHORTESTPATH = "shortest path";
-    const std::string PRINT = "print";
 	const std::string ADDNODE = "add node";
 	const std::string ADDEDGE = "add edge";
-	const std::string DELETENODE = "delete node";
-	const std::string DELETEEDGE = "delete edge";
 	const std::string UPDATENODE = "update node";
 	const std::string UPDATEEDGE = "update edge";
+	const std::string PRINTGRAPH = "print graph";
 	
 	
     const std::string EXIT = "quit";

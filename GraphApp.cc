@@ -73,6 +73,7 @@ void GraphApp::setupMenu() {
     activeCommands.push_back(ADDNODE);
     activeCommands.push_back(UPDATEEDGE);
     activeCommands.push_back(UPDATENODE);
+    activeCommands.push_back(PRINTGRAPH);
     activeCommands.push_back(HELP);
     activeCommands.push_back(EXIT);
 }
@@ -359,10 +360,10 @@ void GraphApp::loadGraph (string graphFilename) {
  */
 void GraphApp::printNeighbors() {
     for (Node * node : nodes){
-        cout << nodes[node->getID()]->getName() << "-" << node->getName() << endl;
-        cout << "Neighbors: ";
+        cout << node->getName();
+        cout << " neighbors: ";
         for (int neighbor : node->getNeighbors()) {
-            cout << nodes[neighbor]->getName() << ",";
+            cout << nodes[neighbor]->getName() << " ";
         }
         cout << endl;
     }
@@ -374,9 +375,9 @@ void GraphApp::printNeighbors() {
  */
 void GraphApp::printEdges() {
     for (size_t i = 0; i < nodes.size(); i++) {
-        cout << "Edges from node: " << nodes[i]->getID() << endl; 
+        cout << "Edges from node: " << nodes[i]->getName() << endl; 
         for (Edge * edge : edges[i]){
-            cout << "Edge" << edge->getID() << ":" << nodes[edge->getStartNodeID()]->getName() << "-";
+            cout << nodes[edge->getStartNodeID()]->getName() << "-";
             cout << edge->getWeight() << "-";
             cout << nodes[edge->getEndNodeID()]->getName();
             cout << endl;
@@ -605,6 +606,8 @@ int GraphApp::printHeader(){
                 cout << ": Updates the name of a specific node." << endl;
             } else if (command == UPDATEEDGE) {
                 cout << ": Updates the weight of a specific edge." << endl;
+            } else if (command == PRINTGRAPH) {
+                cout << ": Print all nodes and edges." << endl;
             } else if (command == EXIT) {
                 cout << ": Exits the program." << endl;
             }
@@ -786,7 +789,7 @@ void GraphApp::handleCommands() {
             } else {
                 cout << "Feature not enabled!" << endl;
             }
-        } else if (command == PRINT) {
+        } else if (command == PRINTGRAPH) {
             if(kWeighted) {
                 printEdges();
             }
