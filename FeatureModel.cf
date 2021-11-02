@@ -1,0 +1,18 @@
+GPL
+    xor GraphType
+        Directed
+        Undirected
+    Weighted ?
+    xor Search ?
+        BFS
+        DFS
+    or Algorithm
+        Cycle
+        CC
+        Prim
+
+[Cycle => DFS]
+[Prim => Weighted]
+[Prim => Undirected]
+[CC => Search]
+[CC => Undirected]

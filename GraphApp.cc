@@ -122,6 +122,147 @@ void GraphApp::loadConfig (string configFilename){
     } else cout << "Unable to open configFile" << endl;
 }
 
+/**
+ * @brief Check if a node with the provide name exists in the graph
+ * 
+ * @param nodeName 
+ * @return true 
+ * @return false 
+ */
+
+bool GraphApp::checkNode (string nodeName) {
+    for (int i=0; i < nodes.size(); i++) {
+        if (nodes[i]->getName() == nodeName) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * @brief Add new node to graph
+ * 
+ * @param nodeName 
+ */
+
+void GraphApp::addNode(std::string nodeName) {
+    if (checkNode(nodeName)) {
+        cout << "Node already exists!" << endl;
+    } else {
+        Node* newNode = new Node(nodeName);
+        nodes.push_back(newNode);
+    }
+}
+
+/**
+ * @brief Add new edge to weighted graph
+ * 
+ * @param startNode 
+ * @param endNode 
+ * @param weight 
+ */
+void GraphApp::addEdge(std::string startNodeName, std::string endNodeName, int weight) {
+    if(!checkNode(startNodeName)) {
+        Node* newNode = new Node(startNodeName);
+        nodes.push_back(newNode);
+    }
+
+    if(!checkNode(endNodeName)) {
+        Node* newNode = new Node(endNodeName);
+        nodes.push_back(newNode);
+    }
+    
+    for (Node * n1 : nodes){
+        for (Node * n2: nodes){
+            if (n1->getName() == startNodeName &&
+                n2->getName() == endNodeName) {
+
+                if (kWeighted) {
+                    Edge* edge = new Edge(n1->getID(), n2->getID(), weight);
+                    edges[n1->getID()].push_back(edge);
+
+                    if (kUndirected){
+                        edges[n2->getID()].push_back(edge);
+                    }
+                }
+            
+            }    
+            
+        }
+
+    }
+}
+
+/**
+ * @brief Add new edge to unweighted graph
+ * 
+ * @param startNode 
+ * @param endNode 
+ */
+void GraphApp::addEdge(std::string startNodeName, std::string endNodeName) {
+    if(!checkNode(startNodeName)) {
+        Node* newNode = new Node(startNodeName);
+        nodes.push_back(newNode);
+    }
+
+    if(!checkNode(endNodeName)) {
+        Node* newNode = new Node(endNodeName);
+        nodes.push_back(newNode);
+    }
+    
+    for (Node * n1 : nodes){
+        for (Node * n2: nodes){
+            if (n1->getName() == startNodeName &&
+                n2->getName() == endNodeName) {
+                if (!kWeighted) {
+                    n1->addNeighbor(n2->getID());
+                    
+                    if (kUndirected){
+                        n2->addNeighbor(n1->getID());
+                    }                    
+                }           
+            }    
+            
+        }
+
+    }
+}
+
+void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
+    for (int i=0; i < nodes.size(); i++) {
+        if (nodes[i]->getName() == nodeName) {
+            nodes[i]->name = nodeName;
+        }
+    }
+}
+
+void GraphApp::updateEdgeWeight(std::string startNodeName, std::string endNodeName, int newWeight) {
+    int startNodeID, endNodeID;
+
+    for (int i=0; i < nodes.size(); i++) {
+        if (nodes[i]->getName() == startNodeName) {
+            startNodeID = nodes[i]->getID();
+        }
+        if (nodes[i]->getName() == endNodeName) {
+            endNodeID = nodes[i]->getID();
+        }
+    }
+    
+    for (int i=0; i < edges[startNodeID].size(); i++) {
+        if (edges[startNodeID][i]->getEndNodeID() == endNodeID) {
+            edges[startNodeID][i]->weight = newWeight;
+        }
+    }
+
+    if (kUndirected) {
+        for (int i=0; i < edges[endNodeID].size(); i++) {
+            if (edges[endNodeID][i]->getStartNodeID() == startNodeID) {
+                edges[endNodeID][i]->weight = newWeight;
+            }
+        }
+    }
+
+}
 
 /**
  * @brief Loads the graph from the provided file
@@ -136,52 +277,51 @@ void GraphApp::loadGraph (string graphFilename) {
     if (graphFile.is_open()) {
         string line;
 
-        // Read nodes until empty line
-        getline (graphFile, line);
-
-        while ( line.size() != 0 )
-        {
-            Node* node = new Node(line);
-            nodes.push_back(node);
-
-            getline (graphFile, line);
-        }
-
         // Read edges until end of file
         while (getline (graphFile, line)) {
             //Extract name of node in the edge
             stringstream ss(line);
-            vector<string> vect;
+            vector<string> lineElems;
 
-            for (string i; ss >> i;) {
-                vect.push_back(i);
+            for (string lineElem; ss >> lineElem;) {
+                lineElems.push_back(lineElem);
             }
 
-            string startNode = vect[0];
-            string endNode = vect[1];
+            string startNode = lineElems[0];
+            string endNode = lineElems[1];
             int weight;
             if (kWeighted) {
-                weight = stoi(vect[2]);
+                weight = stoi(lineElems[2]);
             }
 
-            for (Node * n1 : nodes){
-                for (Node * n2: nodes){
-                    if (n1->getName() == startNode &&
-                        n2->getName() == endNode) {
+            if(!checkNode(startNode)) {
+                Node* newNode = new Node(startNode);
+                nodes.push_back(newNode);
+            }
+
+            if(!checkNode(endNode)) {
+                Node* newNode = new Node(endNode);
+                nodes.push_back(newNode);
+            }
+
+            for (int i=0; i < nodes.size(); i++) {
+               for (int j=0; j < nodes.size(); j++) {
+                    if (nodes[i]->getName() == startNode &&
+                        nodes[j]->getName() == endNode) {
                         if (!kWeighted) {
-                            n1->addNeighbor(n2->getID());
+                            nodes[i]->addNeighbor(nodes[j]->getID());
                             
                             if (kUndirected){
-                                n2->addNeighbor(n1->getID());
+                                nodes[j]->addNeighbor(nodes[i]->getID());
                             }                    
                         }
 
                         if (kWeighted) {
-                            Edge* edge = new Edge(n1->getID(), n2->getID(), weight);
-                            edges[n1->getID()].push_back(edge);
+                            Edge* edge = new Edge(nodes[i]->getID(), nodes[j]->getID(), weight);
+                            edges[nodes[i]->getID()].push_back(edge);
 
                             if (kUndirected){
-                                edges[n2->getID()].push_back(edge);
+                                edges[nodes[j]->getID()].push_back(edge);
                             }
                         }
                     
@@ -227,48 +367,6 @@ void GraphApp::printEdges() {
         }
     }
 }
-
-// /**
-//  * @brief Traverses the graph in Depth-First search
-//  * 
-//  * @param nodeID: starting node for the traversal
-//  * @param command: operation performed at each traversed node
-//  */
-// void GraphApp::DFS(int nodeID, string command) {
-//     visited[nodeID] = true;
-
-//     if (kWeighted) {
-//         for (Edge* edge : edges[nodeID]) {
-//             int endNodeID = edge->getEndNodeID();
-
-//             if (kDirected) {
-//                 if (visited[endNodeID] == false) {
-//                     DFS(endNodeID, command);
-//                 }
-//             }
-
-//             if (kUndirected) {
-//                 int startNodeID = edge->getStartNodeID();
-//                 if (startNodeID != nodeID && visited[startNodeID] == false) {
-//                     DFS(startNodeID, command);
-//                 } else if (endNodeID != nodeID && visited[endNodeID] == false) {
-//                     DFS(endNodeID, command);
-//                 }
-//             }
-
-//         }
-        
-//     }
-    
-//     if (!kWeighted){
-//         for (int neighborID : nodes[nodeID]->getNeighbors()) {
-//             if (visited[neighborID] == false) {
-//                 DFS(neighborID, command);
-//             }
-//         }
-//     }
-    
-// }
 
 /**
  * @brief Traverses the graph in Depth-First search while executing the command
@@ -653,6 +751,8 @@ void GraphApp::handleCommands() {
     //Iterate until the stop command is reached.
     bool iterate = true;
     while(iterate){
+        // TODO: Add variable that receives the result of the functions being called
+        // TODO: Add the possibility of loading graph from file and have multiple graphs
         //Places a new line.
         cout << endl;
 
@@ -679,14 +779,58 @@ void GraphApp::handleCommands() {
             } else {
                 cout << "Feature not enabled!" << endl;
             }
-        } else if (command == PRIM && kPrim) {
+        } else if (command == PRIM) {
             if (kPrim) {
                 MSTPrim();
             } else {
                 cout << "Feature not enabled!" << endl;
             }
-        } else if (command == LOAD) {
-            //TODO: implement loading a graph from specified file
+        } else if (command == PRINT) {
+            if(kWeighted) {
+                printEdges();
+            }
+            if(!kWeighted) {
+                printNeighbors();
+            }
+        } else if (command == ADDNODE) {
+            cout << "Enter node name: " << endl;
+            string nodeName;
+            getline(cin, nodeName);
+            addNode(nodeName);
+        } else if (command == ADDEDGE) {
+            string startNodeName, endNodeName;
+            int weight;
+            cout << "Enter start node name: " << endl;
+            getline(cin, startNodeName);
+            cout << "Enter end node name: " << endl;
+            getline(cin, endNodeName);
+            if(kWeighted) {
+                cout << "Enter weight: " << endl;
+                cin >> weight;
+                addEdge(startNodeName, endNodeName, weight);
+            }
+            if (!kWeighted) {
+                addEdge(startNodeName, endNodeName);
+            }
+        } else if (command == UPDATENODE) {
+            string originalNodeName, newNodeName;
+            cout << "Enter original node name: " << endl;
+            getline(cin, originalNodeName);
+            cout << "Enter new node name: " << endl;
+            getline(cin, newNodeName);
+            updateNodeName(originalNodeName, newNodeName);
+        } else if (command == UPDATEEDGE) {
+            if(kWeighted) {
+                string startNodeName, endNodeName;
+                int weight;
+                cout << "Enter start node name: " << endl;
+                getline(cin, startNodeName);
+                cout << "Enter end node name: " << endl;
+                getline(cin, endNodeName);
+                cout << "Enter new weight: " << endl;
+                cin >> weight;
+                updateEdgeWeight(startNodeName, endNodeName, weight);
+            }
         } else if (command == EXIT) {
             iterate = false;
         } else if (command == "") {

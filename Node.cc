@@ -20,8 +20,8 @@ int Node::nodeCount = 0;
  * 
  * @param nodeName 
  */
-Node::Node(string nodeName) : nodeName{nodeName} {
-	nodeID = nodeCount;
+Node::Node(string nodeName) : name{nodeName} {
+	id = nodeCount;
 
     nodeCount++;
 }

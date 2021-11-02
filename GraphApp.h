@@ -43,26 +43,26 @@ class GraphApp {
 	/** Driver Methods */
 	void handleCommands();
     
-    private:
-
 	/**Private Variables */
     std::vector<Node*> nodes;
     std::map<int,std::vector<Edge*>> edges;
+    private:
+
 	std::vector<std::string> activeCommands;
 
     // /** Private Graph Algorithms*/
-	// void graphAlgorithm(algorithmConfiguration, userDemand);
-    // void traverse(std::string command);
-    // void DFS(int nodeID, std::string command);
 	bool isCyclic();
 	bool DFS(int nodeID, int parent, std::string command);
     void BFS(int nodeID, std::string command);
 	void connectedComponents();
 	void MSTPrim();
 
-	/** Build Graph Methods*/
+	/** Edit Graph Methods*/
 	void addNode(std::string nodeName);
-	void addEdge(std::string n1, std::string n2, int weight);
+	void addEdge(std::string startNode, std::string endNode, int weight);
+	void addEdge(std::string startNode, std::string endNode);
+	void updateNodeName(std::string nodeName, std::string newName);
+	void updateEdgeWeight(std::string startNode, std::string endNode, int newWeight);
 
 	/** Helper Methods and Variables */
     std::map<int, bool> visited;
@@ -74,6 +74,7 @@ class GraphApp {
 	void setupMenu();
 	int printHeader();
 	void clearVisited();
+	bool checkNode(std::string nodeName);
 
     /** Debugging methods */
     void printNeighbors();
@@ -87,7 +88,15 @@ class GraphApp {
     const std::string PRIM = "prim";
     const std::string KRUSKAL = "kruskal";
     const std::string SHORTESTPATH = "shortest path";
-    const std::string LOAD = "load";
+    const std::string PRINT = "print";
+	const std::string ADDNODE = "add node";
+	const std::string ADDEDGE = "add edge";
+	const std::string DELETENODE = "delete node";
+	const std::string DELETEEDGE = "delete edge";
+	const std::string UPDATENODE = "update node";
+	const std::string UPDATEEDGE = "update edge";
+	
+	
     const std::string EXIT = "quit";
 
 };

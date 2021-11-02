@@ -23,19 +23,20 @@ class Node {
 	void addNeighbor(int neighborID);
 
 	/** Accessor methods */
-	int getID(){ return nodeID; };
+	int getID(){ return id; };
 	int getValue(){ return value; };
-	std::string getName(){ return nodeName; };
+	std::string getName(){ return name; };
 	std::vector<int> getNeighbors() {return neighbors;}
 
 	/** Mutator methods */
 	void setValue(int newValue) {value = newValue;}
 
-	private:
-	int nodeID;
-	int value;
-	std::string nodeName;
+	std::string name;
+	
 	std::vector<int> neighbors;
+	private:
+	int id;
+	int value;
 
 
 

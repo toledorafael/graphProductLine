@@ -15,16 +15,23 @@
 
 ## Feature configurations
 Possible feature configurations:
-- kWeighted /\ kDirected /\ kDFS /\ kCycle
-- !kWeighted /\ kDirected /\ kDFS /\ kCycle
-- kWeighted /\ kUndirected /\ kDFS /\ kCycle
-- !kWeighted /\ kUndirected /\ kDFS /\ kCycle
-- kWeighted /\ kUndirected /\ kDFS /\ kConnectedComps
-- !kWeighted /\ kUndirected /\ kDFS /\ kConnectedComps
-- kWeighted /\ kUndirected /\ kBFS /\ kConnectedComps
-- !kWeighted /\ kUndirected /\ kBFS /\ kConnectedComps
-- kWeighted /\ kUndirected /\ kPrim
-- ...
+- Undirected /\ Weighted /\ Prim /\ !Directed /\ !CC /\ !DFS /\ !BFS /\ !Cycle
+- Undirected /\ Weighted /\ DFS /\ Prim /\ !Directed /\ !CC /\ !BFS /\ !Cycle
+- Undirected /\ Weighted /\ BFS /\ Prim /\ !Directed /\ !CC /\ !DFS /\ !Cycle
+- Undirected /\ DFS /\ CC /\ !Directed /\ !Weighted /\ !Prim /\ !BFS /\ !Cycle
+- Undirected /\ BFS /\ CC /\ !Directed /\ !Weighted /\ !Prim /\ !DFS /\ !Cycle
+- Undirected /\ Weighted /\ DFS /\ CC /\ !Directed /\ !Prim /\ !BFS /\ !Cycle
+- Undirected /\ Weighted /\ BFS /\ CC /\ !Directed /\ !Prim /\ !DFS /\ !Cycle
+- Undirected /\ Weighted /\ DFS /\ CC /\ Prim /\ !Directed /\ !BFS /\ !Cycle
+- Undirected /\ Weighted /\ BFS /\ CC /\ Prim /\ !Directed /\ !DFS /\ !Cycle
+- Undirected /\ DFS /\ Algorithm /\ Cycle /\ !Directed /\ !Weighted /\ !Prim /\ !Algorithm /\ !CC /\ !BFS
+- Undirected /\ Weighted /\ DFS /\ Cycle /\ !Directed /\ !Prim /\ !CC /\ !BFS
+- Undirected /\ Weighted /\ DFS /\ Cycle /\ Prim /\ !Directed /\ !CC /\ !BFS
+- Undirected /\ DFS /\ Cycle /\ CC /\ !Directed /\ !Weighted /\ !Prim /\ !BFS
+- Undirected /\ Weighted /\ DFS /\ Cycle /\ CC /\ !Directed /\ !Prim /\ !BFS
+- Undirected /\ Weighted /\ DFS /\ Cycle /\ CC /\ Prim /\ !Directed /\ !BFS
+- Directed /\ DFS /\ Cycle /\ !Weighted /\ !Prim /\ !CC /\ !BFS /\ !Undirected
+- Directed /\ Weighted /\ DFS /\ Cycle /\ !Prim /\ !CC /\ !BFS /\ !Undirected
 
 
 

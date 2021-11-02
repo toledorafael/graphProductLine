@@ -27,8 +27,10 @@ class Edge {
 	int getWeight(){ return weight; };
 	int getNext(int currentNodeID);
 	
+	int weight;
+
 	private:
-	int edgeID, startNodeID, endNodeID, weight;
+	int edgeID, startNodeID, endNodeID;
 
 	static int edgeCount;
 };
