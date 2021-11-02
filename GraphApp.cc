@@ -647,7 +647,7 @@ bool GraphApp::isCyclic() {
  * 
  */
 void GraphApp::connectedComponents() {
-    if (kSearch && kUndirected) {
+    if ((kBFS || kDFS) && kUndirected) {
         clearVisited();
         int compNum = 0;
         for (Node * node : nodes) {
